@@ -27,7 +27,7 @@ public class Distinct_count {
         Space: O(t.length())
 
     */
-    static int distinct_C_subseq(String s,String t, int x, int y) {
+    static int numDistinct_r(String s,String t, int x, int y) {
         if(x == s.length() && y == t.length()) {    //if both empty, then we already created the answer.
             return 1;
         }
@@ -44,16 +44,16 @@ public class Distinct_count {
 
         if(sChar == tChar) {
             //ask the count of answers from next sChar and next tChar.
-            int val1 = distinct_C_subseq(s, t, x + 1, y + 1);
+            int val1 = numDistinct_r(s, t, x + 1, y + 1);
 
             //ask the count of answers from next sChar, but same tChar.  (as current tChar can be matched with multiple sChar)
-            int val2 = distinct_C_subseq(s, t, x + 1, y);
+            int val2 = numDistinct_r(s, t, x + 1, y);
             
             //return their sum value;
             return val1 + val2;
         }
         else { //if sChar and tChar are not same, then check for next sChar. (we can move forward in "t" only when current tChar matches)
-            return distinct_C_subseq(s, t, x + 1, y);
+            return numDistinct_r(s, t, x + 1, y);
         }
     }
 
@@ -67,7 +67,7 @@ public class Distinct_count {
         Space: O(sLength * tLength)
     */
     
-    public int numDistinct(String s, String t) {
+    public int numDistinct_DP(String s, String t) {
         int[][] dp = new int[s.length() + 1][t.length() + 1];
         
         for(int i = dp.length - 1; i >= 0; i--) {
@@ -100,4 +100,43 @@ public class Distinct_count {
         return dp[0][0];
     }
     /****************************************************************************************** */
+
+
+    /*1-D DP {we have to move from left to right in a row, to fill this DP}
+        Time: O(sLength * tLength)
+        Space: O(sLength)
+    */
+
+    public int numDistinct(String s, String t) {
+        int[] dp = new int[t.length() + 1];
+        
+        for(int i = s.length() ; i >= 0; i--) {
+            for(int j = 0; j < dp.length; j++) {    //this order is imp; as we reaches to down-cell, and down-right-cell.
+                
+                if(i == s.length() && j == dp.length - 1) {
+                    dp[j] = 1;
+                }
+                else if(i == s.length()) {
+                    dp[j] = 0;
+                }
+                else if(j == dp.length - 1) {
+                    dp[j] = 1;
+                }
+                else {
+                    char sChar = s.charAt(i);
+                    char tChar = t.charAt(j);
+                    
+                    if(sChar == tChar) {
+                        dp[j] = dp[j] + dp[j + 1];
+                    }
+                    else {
+                        dp[j] = dp[j];
+                    }
+                }
+            }
+        }
+        
+        return dp[0];
+    }
+    /*************************************************************************************** */
 }
